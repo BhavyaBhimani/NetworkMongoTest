@@ -36,12 +36,6 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install pymongo mongomock pydantic pycryptodome python-dotenv requests
 
-      - name: Seed Database Baseline
-        env:
-          MONGODB_URI: ${{ secrets.MONGODB_URI || 'mongodb://127.0.0.1:27017/nettrace_db' }}
-        run: |
-          python seed_data.py
-
       - name: Run PR Validator Agent (Pre-Action Gate)
         id: validator
         env:
