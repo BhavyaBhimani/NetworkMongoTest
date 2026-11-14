@@ -13,7 +13,7 @@ permissions:
 jobs:
   deploy-and-attest:
     name: Deploy Network Policy & Verify
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     services:
       mongodb:
@@ -30,7 +30,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.11'
 
       - name: Install Dependencies
         run: |
@@ -43,7 +43,6 @@ jobs:
           PR_AUTHOR: ${{ github.actor }}
           PR_ID: PR-POST-MERGE
         run: |
-          # Identify which environment was modified
           for env in eng qa dev pat prod; do
             if git diff --name-only HEAD~1 HEAD | grep "environments/$env/" > /dev/null; then
               echo "Executing deployment pipeline for environment: $env"

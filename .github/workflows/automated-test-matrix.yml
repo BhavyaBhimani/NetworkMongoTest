@@ -10,7 +10,7 @@ on:
 jobs:
   test-matrix:
     name: Execute Full Multi-Environment Scenarios
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     services:
       mongodb:
@@ -25,7 +25,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.11'
 
       - name: Install Dependencies
         run: |
