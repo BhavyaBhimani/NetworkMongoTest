@@ -28,6 +28,20 @@
       "action": "ALLOW",
       "risk_level": "LOW",
       "description": "Resolver routing for authoritative internal DNS queries"
+    },
+    {
+      "rule_id": "BASE-DNS-PAT",
+      "name": "Core DNS Egress (pat)",
+      "target_env": "pat",
+      "direction": "ingress",
+      "protocol": "UDP",
+      "port_range": "53",
+      "source_cidr": "0.0.0.0/0",
+      "destination_cidr": "1.1.1.1/32",
+      "action": "ALLOW",
+      "risk_level": "HIGH",
+      "description": "Resolver routing for authoritative internal DNS queries"
     }
+
   ]
 }
