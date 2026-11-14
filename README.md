@@ -1,6 +1,8 @@
 # NetworkMongoTest: Multi-Environment Policy GitOps & Automated Verification
 ### Automated Testing & GitOps Repository for NetTrace AI (MongoDB Hackathon)
 
+> **Main Application Engine:** [`BhavyaBhimani/NetworkMongo`](https://github.com/BhavyaBhimani/NetworkMongo) — Core multi-agent reasoning, Gemini AI integration, Web Dashboard UI, and MongoDB models.
+
 This repository serves as the **declarative Infrastructure-as-Code (GitOps) repository** for network policies managed across enterprise environments (`eng`, `dev`, `qa`, `pat`, `prod`).
 
 ---
