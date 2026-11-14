@@ -1,10 +1,26 @@
 import json
 import logging
+import re
 import requests
 from typing import Dict, Any, Optional, List
 from app.config import settings
 
 logger = logging.getLogger("nettrace.gemini")
+
+def clean_json_text(text: str) -> str:
+    """Cleans potential Markdown artifacts from Gemini JSON responses."""
+    text = text.strip()
+    if text.startswith("```"):
+        lines = text.splitlines()
+        if lines[0].startswith("```"):
+            lines = lines[1:]
+        if lines and lines[-1].startswith("```"):
+            lines = lines[:-1]
+        text = "\n".join(lines).strip()
+    # Strip accidental leading blockquotes or markdown bolding before keys
+    text = re.sub(r'^[ \t]*>[ \t]*\**"?([a-zA-Z0-9_]+)"?\**[ \t]*:', r'"\1":', text, flags=re.MULTILINE)
+    text = re.sub(r'^[ \t]*\**"?([a-zA-Z0-9_]+)"?\**[ \t]*:', r'"\1":', text, flags=re.MULTILINE)
+    return text
 
 class GeminiAgentService:
     """
@@ -123,7 +139,7 @@ Return JSON in this exact structure:
             return None
 
         try:
-            return json.loads(response_text)
+            return json.loads(clean_json_text(response_text))
         except Exception as e:
             logger.warning(f"Failed to parse Gemini JSON output: {e}. Raw: {response_text}")
             return None
@@ -161,7 +177,7 @@ Return JSON:
             return None
 
         try:
-            return json.loads(response_text)
+            return json.loads(clean_json_text(response_text))
         except Exception as e:
             logger.warning(f"Failed to parse Gemini drift JSON: {e}")
             return None
@@ -204,7 +220,7 @@ Return JSON:
             return None
 
         try:
-            return json.loads(response_text)
+            return json.loads(clean_json_text(response_text))
         except Exception as e:
             logger.warning(f"Failed to parse Gemini remediation JSON: {e}")
             return None

@@ -30,6 +30,19 @@
       "description": "Resolver routing for authoritative internal DNS queries"
     },
     {
+      "rule_id": "ENG-DEV-SYNC-LINK",
+      "name": "Engineering Staging & Dev Sync Gateway",
+      "target_env": "eng",
+      "direction": "egress",
+      "protocol": "TCP",
+      "port_range": "8080",
+      "source_cidr": "10.1.0.0/16",
+      "destination_cidr": "10.3.0.0/16",
+      "action": "ALLOW",
+      "risk_level": "LOW",
+      "description": "Development staging synchronization bridge"
+    },
+    {
       "rule_id": "ENG-METRICS-INGRESS",
       "name": "Internal Prometheus & Analytics Metrics Telemetry",
       "target_env": "eng",
