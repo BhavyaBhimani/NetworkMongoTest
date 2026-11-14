@@ -54,6 +54,19 @@
       "action": "ALLOW",
       "risk_level": "LOW",
       "description": "Internal cluster metrics scraping for engineering observability"
+    },
+    {
+      "rule_id": "ENG-GRAFANA-TELEMETRY-3000",
+      "name": "Grafana Internal Dashboard & Health Telemetry",
+      "target_env": "eng",
+      "direction": "ingress",
+      "protocol": "TCP",
+      "port_range": "3000",
+      "source_cidr": "10.0.0.0/16",
+      "destination_cidr": "10.1.5.0/24",
+      "action": "ALLOW",
+      "risk_level": "LOW",
+      "description": "Internal developer observability dashboard access"
     }
   ]
 }
