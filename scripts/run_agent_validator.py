@@ -80,11 +80,40 @@ def main():
         print(f"  • Decision: {'APPROVED' if val['approved'] else 'REJECTED'}")
         print(f"  • Risk Score: {val['risk_level']}")
         print(f"  • Human Authority Sign-Off Required: {val['requires_human_approval']}")
+        if val.get("llm_assisted"):
+            print(f"  • Cognitive AI: Evaluated by {val.get('llm_model')}")
         
         for reason in val.get("reasons", []):
             print(f"    - {reason}")
         for note in val.get("context_notes", []):
             print(f"    [MongoDB Context] {note}")
+
+        # Persist PR status in MongoDB so local/central Web UI updates in real-time
+        try:
+            from datetime import datetime
+            db = get_db()
+            db_status = "AWAITING_APPROVAL" if val["requires_human_approval"] else ("MERGED" if val["approved"] else "REJECTED")
+            db.pull_requests.update_one(
+                {"pr_id": pr_mock["pr_id"]},
+                {
+                    "$set": {
+                        "pr_id": pr_mock["pr_id"],
+                        "title": os.getenv("PR_TITLE", f"Policy Update: {env.upper()} infrastructure"),
+                        "author": pr_author,
+                        "target_branch": env,
+                        "policy_changes": rules,
+                        "status": db_status,
+                        "validation_result": val,
+                        "updated_at": datetime.utcnow()
+                    },
+                    "$setOnInsert": {
+                        "created_at": datetime.utcnow()
+                    }
+                },
+                upsert=True
+            )
+        except Exception as e:
+            print(f"Notice: MongoDB status sync notice ({e})")
 
         if not val["approved"]:
             overall_approved = False
