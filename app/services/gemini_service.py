@@ -121,7 +121,8 @@ SITUATIONAL CONTEXT RETRIEVED FROM MONGODB (NO COLD START):
 {json.dumps(context.get('author_stats', {}), indent=2, default=str)}
 
 RULES TO ENFORCE:
-- If an active emergency drift exists in the target environment, the PR MUST NOT be approved until reconciled.
+- If an active emergency drift exists in the target environment that is NOT reconciled by this PR, the PR MUST NOT be approved until reconciled.
+- If this PR includes, formalizes, and codifies the active emergency drift rule (or port 8080) into declarative GitOps policy, acknowledge the successful drift reconciliation and APPROVE the PR (subject to standard protected review).
 - Opening ports 22, 3389, or 23 to 0.0.0.0/0 is a CRITICAL security violation and MUST NOT be approved.
 - Environments PAT and PROD are protected and carry higher risk.
 - If past incidents show outages for the same ports or subnets, highlight the similarity and elevate risk to HIGH.
