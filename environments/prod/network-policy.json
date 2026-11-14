@@ -41,6 +41,19 @@
       "action": "ALLOW",
       "risk_level": "HIGH",
       "description": "Production encrypted transit for PCI-DSS payment tokenization cluster"
+    },
+    {
+      "rule_id": "PROD-PAYMENT-GATEWAY-2",
+      "name": "Production Payment Gateway Transit Service",
+      "target_env": "prod",
+      "direction": "ingress",
+      "protocol": "TCP",
+      "port_range": "443",
+      "source_cidr": "10.0.0.0/16",
+      "destination_cidr": "10.2.0.5/16",
+      "action": "ALLOW",
+      "risk_level": "HIGH",
+      "description": "Production encrypted transit for PCI-DSS payment tokenization cluster"
     }
   ]
 }
