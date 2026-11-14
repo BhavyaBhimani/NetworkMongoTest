@@ -248,15 +248,21 @@ class PipelineOrchestrator:
 
             # Automatically trigger new PR to revert the change in Git
             revert_pr_id = f"PR-REVERT-{uuid.uuid4().hex[:6].upper()}"
+            ai_rca = test_res.get("ai_remediation")
+            revert_title = f"[AUTO-REVERT] Rollback failed network policy from {pr_id}"
+            if ai_rca and ai_rca.get("remediation_summary"):
+                revert_title = f"[AUTO-REVERT] {pr_id}: {ai_rca.get('remediation_summary')[:60]}"
+
             revert_pr_doc = {
                 "pr_id": revert_pr_id,
-                "title": f"[AUTO-REVERT] Rollback failed network policy from {pr_id}",
+                "title": revert_title,
                 "author": "NetworkDeploymentAgent (Automated Remediation)",
                 "target_branch": target_env,
                 "source_branch": f"revert/{pr_id}",
                 "policy_changes": [],
                 "status": "MERGED",
                 "reverts_pr_id": pr_id,
+                "ai_rca": ai_rca,
                 "created_at": datetime.utcnow(),
                 "updated_at": datetime.utcnow()
             }
@@ -271,10 +277,15 @@ class PipelineOrchestrator:
                         "test_result": test_res["test_summary"],
                         "rollback_result": rollback_res,
                         "remediation_pr_id": revert_pr_id,
+                        "ai_remediation": ai_rca,
                         "updated_at": datetime.utcnow()
                     }
                 }
             )
+
+            wf_summary = f"ALERT: PR {pr_id} failed synthetic tests on {target_env.upper()}. State was automatically rolled back to prior snapshot, remediation PR {revert_pr_id} merged, and failure episode logged into MongoDB memory."
+            if ai_rca:
+                wf_summary += f" [Gemini RCA: {ai_rca.get('root_cause')}]"
 
             return {
                 "final_status": final_status,
@@ -282,7 +293,8 @@ class PipelineOrchestrator:
                 "tests": test_res["test_summary"],
                 "rollback": rollback_res,
                 "remediation_pr_id": revert_pr_id,
-                "workflow_summary": f"ALERT: PR {pr_id} failed synthetic tests on {target_env.upper()}. State was automatically rolled back to prior snapshot, remediation PR {revert_pr_id} merged, and failure episode logged into MongoDB memory."
+                "ai_remediation": ai_rca,
+                "workflow_summary": wf_summary
             }
 
 pipeline_orchestrator = PipelineOrchestrator()

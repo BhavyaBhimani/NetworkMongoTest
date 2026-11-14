@@ -34,7 +34,7 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install pymongo mongomock pydantic pycryptodome python-dotenv
+          python -m pip install pymongo mongomock pydantic pycryptodome python-dotenv requests
 
       - name: Seed Database Baseline
         env:
@@ -46,6 +46,7 @@ jobs:
         id: validator
         env:
           MONGODB_URI: ${{ secrets.MONGODB_URI || 'mongodb://127.0.0.1:27017/nettrace_db' }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           PR_AUTHOR: ${{ github.actor }}
           PR_ID: PR-${{ github.event.pull_request.number }}
         run: |

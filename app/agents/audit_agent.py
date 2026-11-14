@@ -4,6 +4,7 @@ from typing import Dict, Any, List
 from app.agents.base import BaseAgent
 from app.db.attestations import attestation_ledger
 from app.db.memory import memory_manager
+from app.services.gemini_service import gemini_service
 
 class AuditReconciliationAgent(BaseAgent):
     def __init__(self):
@@ -60,23 +61,37 @@ class AuditReconciliationAgent(BaseAgent):
                 drift_incidents.append(incident_doc)
 
                 # UPDATE AGENTIC MEMORY (Crucial: Solves Hackathon "No Cold Start" Problem!)
+                summary_text = f"Emergency manual change detected on {env.upper()}: Rule '{rule.get('name')}' opened port {rule.get('port_range')} out-of-band without PR pipeline."
+                tags = ["drift", "emergency_change", "manual_override", env]
+                resolution_text = "Audit agent recorded manual drift; flagged for upcoming PR reconciliation."
+                llm_used = False
+
+                if gemini_service.is_configured:
+                    synth = gemini_service.synthesize_drift_incident(rule, env)
+                    if synth:
+                        summary_text = synth.get("summary", summary_text)
+                        tags = synth.get("tags", tags)
+                        resolution_text = synth.get("resolution_advice", resolution_text)
+                        llm_used = True
+
                 mem_id = memory_manager.record_episode(
                     memory_type="manual_drift",
                     environment=env,
-                    summary=f"Emergency manual change detected on {env.upper()}: Rule '{rule.get('name')}' opened port {rule.get('port_range')} out-of-band without PR pipeline.",
-                    tags=["drift", "emergency_change", "manual_override", env],
+                    summary=summary_text,
+                    tags=tags,
                     affected_ports=[str(rule.get("port_range", ""))],
                     affected_cidrs=[str(rule.get("destination_cidr", ""))],
                     outcome="EMERGENCY_OVERRIDE",
-                    resolution="Audit agent recorded manual drift; flagged for upcoming PR reconciliation.",
-                    metadata={"incident_id": incident_id, "rule_id": rule.get("rule_id")}
+                    resolution=resolution_text,
+                    metadata={"incident_id": incident_id, "rule_id": rule.get("rule_id"), "llm_synthesized": llm_used}
                 )
 
                 self.log_event("DRIFT_DETECTED_MEMORY_UPDATED", {
                     "incident_id": incident_id,
                     "env": env,
                     "memory_id": mem_id,
-                    "rule": rule.get("name")
+                    "rule": rule.get("name"),
+                    "llm_synthesized": llm_used
                 }, level="WARNING")
 
         return {

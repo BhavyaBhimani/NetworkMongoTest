@@ -6,6 +6,7 @@ from app.agents.base import BaseAgent
 from app.db.attestations import attestation_ledger
 from app.db.telemetry import telemetry_store
 from app.db.memory import memory_manager
+from app.services.gemini_service import gemini_service
 
 class SyntheticTestingAgent(BaseAgent):
     def __init__(self):
@@ -149,6 +150,16 @@ class SyntheticTestingAgent(BaseAgent):
                 "env": target_env
             }, level="ERROR")
 
+            # Cognitive Remediation Analysis via Gemini (if active)
+            ai_rca = None
+            resolution_text = "Automated rollback executed and remediation PR merged."
+            if gemini_service.is_configured:
+                failed_items = [d for d in details if d.get("status") == "FAILED"]
+                ai_rca = gemini_service.generate_remediation_analysis(pr_data, failed_items, avg_latency)
+                if ai_rca:
+                    test_summary["ai_remediation"] = ai_rca
+                    resolution_text = f"Rollback executed. AI Root Cause: {ai_rca.get('root_cause')} | Fix: {ai_rca.get('remediation_summary')}"
+
             # Record failure in episodic memory so future PRs have full context!
             fail_mem_id = memory_manager.record_episode(
                 memory_type="failed_pr",
@@ -158,13 +169,15 @@ class SyntheticTestingAgent(BaseAgent):
                 affected_ports=[str(c.get("port_range")) for c in policy_changes],
                 affected_cidrs=[str(c.get("destination_cidr")) for c in policy_changes],
                 outcome="ROLLBACK",
-                resolution="Automated rollback executed and remediation PR merged."
+                resolution=resolution_text,
+                metadata={"ai_remediation": ai_rca} if ai_rca else {}
             )
 
             return {
                 "passed": False,
                 "test_summary": test_summary,
-                "memory_incident_id": fail_mem_id
+                "memory_incident_id": fail_mem_id,
+                "ai_remediation": ai_rca
             }
 
 testing_agent = SyntheticTestingAgent()

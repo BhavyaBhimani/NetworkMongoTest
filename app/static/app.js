@@ -58,6 +58,16 @@ async function initSystemStatus() {
                 ? 'text-[10px] px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 font-mono border border-emerald-800'
                 : 'text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono border border-slate-700';
         }
+        const llmBadge = document.getElementById('llm-status-badge');
+        if (llmBadge && data.llm) {
+            if (data.llm.configured) {
+                llmBadge.innerText = `✨ ${data.llm.model} (Active)`;
+                llmBadge.className = 'text-[10px] px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 font-mono border border-indigo-700 shadow-sm shadow-indigo-500/20';
+            } else {
+                llmBadge.innerText = 'Local Heuristic Rules';
+                llmBadge.className = 'text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono border border-slate-700';
+            }
+        }
     } catch (e) {
         console.error('Failed to get status', e);
     }
@@ -191,12 +201,23 @@ function renderPRDetails(pr) {
                             <i data-lucide="cpu" class="w-3.5 h-3.5"></i>
                             <span>Pre-Action Policy Gate (Enforced Before Run)</span>
                         </h4>
-                        <span class="text-[10px] px-2 py-0.5 rounded font-mono font-semibold ${val?.risk_level === 'CRITICAL' ? 'bg-rose-950 text-rose-400 border border-rose-800' : (val?.risk_level === 'HIGH' ? 'bg-amber-950 text-amber-400 border border-amber-800' : 'bg-emerald-950 text-emerald-400 border border-emerald-800')}">Risk: ${val?.risk_level || 'N/A'}</span>
+                        <div class="flex items-center gap-1.5">
+                            ${val?.llm_assisted ? `<span class="text-[10px] px-2 py-0.5 rounded font-mono font-semibold bg-indigo-950 text-indigo-300 border border-indigo-700">✨ Gemini</span>` : ''}
+                            <span class="text-[10px] px-2 py-0.5 rounded font-mono font-semibold ${val?.risk_level === 'CRITICAL' ? 'bg-rose-950 text-rose-400 border border-rose-800' : (val?.risk_level === 'HIGH' ? 'bg-amber-950 text-amber-400 border border-amber-800' : 'bg-emerald-950 text-emerald-400 border border-emerald-800')}">Risk: ${val?.risk_level || 'N/A'}</span>
+                        </div>
                     </div>
 
                     ${val ? `
                         <div class="space-y-1.5 text-xs">
                             <div class="text-[11px] text-slate-300">${val.reasons?.join('<br>') || 'Validated.'}</div>
+                            ${val.gemini_recommendations && val.gemini_recommendations.length ? `
+                                <div class="mt-2 p-2 rounded bg-indigo-950/40 border border-indigo-900/60 text-[11px] text-indigo-200 space-y-1">
+                                    <span class="text-indigo-400 font-semibold block text-[10px] uppercase tracking-wider flex items-center gap-1">
+                                        <i data-lucide="sparkles" class="w-3 h-3"></i> Gemini AI Recommendations:
+                                    </span>
+                                    ${val.gemini_recommendations.map(r => `<div class="flex items-start gap-1"><span class="text-indigo-400">→</span><span>${r}</span></div>`).join('')}
+                                </div>
+                            ` : ''}
                             ${val.context_notes?.length ? `
                                 <div class="mt-2 p-2 rounded bg-slate-950 border border-slate-800 text-[11px] text-slate-400 space-y-1">
                                     <span class="text-indigo-300 font-semibold block text-[10px] uppercase tracking-wider">Retrieved MongoDB Context:</span>
@@ -223,6 +244,15 @@ function renderPRDetails(pr) {
                                 <span>Avg Latency: <strong class="text-white">${test.latency_avg_ms} ms</strong></span>
                                 <span>Packet Loss: <strong class="${test.packet_loss_pct > 0 ? 'text-rose-400' : 'text-emerald-400'}">${test.packet_loss_pct}%</strong></span>
                             </div>
+                            ${test.ai_remediation ? `
+                                <div class="p-2 rounded bg-rose-950/40 border border-rose-900/60 text-[11px] text-rose-200 space-y-1">
+                                    <span class="text-rose-400 font-semibold block text-[10px] uppercase tracking-wider flex items-center gap-1">
+                                        <i data-lucide="sparkles" class="w-3 h-3"></i> Gemini Root Cause Analysis:
+                                    </span>
+                                    <p>${test.ai_remediation.root_cause}</p>
+                                    <p class="text-slate-300 text-[10px] mt-1"><strong>Fix:</strong> ${test.ai_remediation.remediation_summary}</p>
+                                </div>
+                            ` : ''}
                             <div class="space-y-1 mt-1">
                                 ${test.details.map(d => `
                                     <div class="flex items-center justify-between p-1.5 rounded bg-slate-950 border border-slate-800/80 text-[10px]">

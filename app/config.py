@@ -11,4 +11,8 @@ class Settings:
     DEBUG: bool = os.getenv("DEBUG", "True").lower() in ("true", "1", "yes")
     SECRET_KEY: str = os.getenv("SECRET_KEY", "nettrace-secret-key-atlas-2026")
 
+    # Google Gemini API Settings (Free tier from https://aistudio.google.com)
+    GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
+    GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
+
 settings = Settings()

@@ -1,6 +1,7 @@
 from typing import Dict, Any, List
 from app.agents.base import BaseAgent
 from app.db.memory import memory_manager
+from app.services.gemini_service import gemini_service
 
 class PRValidatorAgent(BaseAgent):
     def __init__(self):
@@ -8,7 +9,8 @@ class PRValidatorAgent(BaseAgent):
 
     def validate_pr(self, pr_data: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Validates a Pull Request using persistent MongoDB Agentic Memory.
+        Validates a Pull Request using persistent MongoDB Agentic Memory and
+        optional Google Gemini Cognitive LLM Reasoning.
         Implements the 'No Cold Start' paradigm by querying past incidents,
         emergency drift states, and environment security policies.
         """
@@ -102,6 +104,31 @@ class PRValidatorAgent(BaseAgent):
             f"Author Context: {author} (Trust Tier: {author_stats.get('trust_tier')}, Historical Rollbacks: {author_stats.get('rollbacks')})"
         )
 
+        # 6. Cognitive LLM Reasoning Layer (Google Gemini)
+        llm_assisted = False
+        gemini_reasoning = None
+        gemini_recommendations = []
+
+        if gemini_service.is_configured:
+            llm_eval = gemini_service.analyze_pr_risk(pr_data, context)
+            if llm_eval:
+                llm_assisted = True
+                gemini_reasoning = llm_eval.get("reasoning")
+                gemini_recommendations = llm_eval.get("recommendations", [])
+
+                # Elevate risk level if Gemini evaluates higher risk
+                llm_risk = llm_eval.get("risk_level", "LOW").upper()
+                risk_order = {"LOW": 1, "HIGH": 2, "CRITICAL": 3}
+                if risk_order.get(llm_risk, 1) > risk_order.get(risk_level, 1):
+                    risk_level = llm_risk
+
+                # If Gemini flagged rejection, enforce it
+                if not llm_eval.get("approved", True):
+                    approved = False
+
+                if gemini_reasoning:
+                    context_notes.append(f"Gemini Cognitive Assessment: {gemini_reasoning}")
+
         validation_result = {
             "approved": approved,
             "risk_level": risk_level,
@@ -109,7 +136,11 @@ class PRValidatorAgent(BaseAgent):
             "reasons": reasons,
             "context_notes": context_notes,
             "matched_historical_incidents": matched_incidents,
-            "memory_context": context
+            "memory_context": context,
+            "llm_assisted": llm_assisted,
+            "llm_model": gemini_service.model if llm_assisted else None,
+            "gemini_reasoning": gemini_reasoning,
+            "gemini_recommendations": gemini_recommendations
         }
 
         self.log_event("PR_VALIDATION_COMPLETED", {
@@ -118,7 +149,8 @@ class PRValidatorAgent(BaseAgent):
             "env": target_branch,
             "approved": approved,
             "risk_level": risk_level,
-            "requires_human_approval": requires_human_approval
+            "requires_human_approval": requires_human_approval,
+            "llm_assisted": llm_assisted
         })
 
         return validation_result

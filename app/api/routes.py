@@ -8,6 +8,7 @@ from app.agents.audit_agent import audit_agent
 from app.db.attestations import attestation_ledger
 from app.db.memory import memory_manager
 from app.db.telemetry import telemetry_store
+from app.services.gemini_service import gemini_service
 
 router = APIRouter(prefix="/api")
 
@@ -29,6 +30,11 @@ def get_system_status():
         "status": "online",
         "engine": "MongoDB Atlas" if db.is_atlas else "Embedded In-Memory MongoDB",
         "database": db.db.name,
+        "llm": {
+            "configured": gemini_service.is_configured,
+            "model": gemini_service.model,
+            "status": "Active (Gemini Free API)" if gemini_service.is_configured else "Heuristic Rule Fallback"
+        },
         "collections": {
             "policies": db.policies.count_documents({}),
             "pull_requests": db.pull_requests.count_documents({}),
@@ -39,6 +45,15 @@ def get_system_status():
             "telemetry_points": db.network_telemetry.count_documents({}),
             "audit_logs": db.audit_logs.count_documents({})
         }
+    }
+
+@router.get("/llm/status")
+def get_llm_status():
+    return {
+        "configured": gemini_service.is_configured,
+        "model": gemini_service.model,
+        "mode": "Gemini Cognitive Agent (Free Tier)" if gemini_service.is_configured else "Local Heuristic Rule Engine (Fallback)",
+        "provider": "Google AI Studio"
     }
 
 @router.get("/environments")

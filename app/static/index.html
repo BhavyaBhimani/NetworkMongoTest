@@ -48,11 +48,18 @@
                 </div>
             </div>
 
-            <!-- Central Mongo Badge -->
-            <div class="hidden md:flex items-center gap-3 px-4 py-1.5 rounded-lg bg-mongo-card border border-mongo-border">
-                <span class="w-2.5 h-2.5 rounded-full bg-mongo-green animate-pulse"></span>
-                <span class="text-xs text-slate-300">Powered by <strong class="text-white">MongoDB Atlas</strong> & Agentic Memory</span>
-                <span id="db-engine-badge" class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono">Loading...</span>
+            <!-- Central Mongo & Gemini Badges -->
+            <div class="hidden lg:flex items-center gap-2.5">
+                <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-mongo-card border border-mongo-border">
+                    <span class="w-2 h-2 rounded-full bg-mongo-green animate-pulse"></span>
+                    <span class="text-xs text-slate-300 font-medium">MongoDB:</span>
+                    <span id="db-engine-badge" class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono">Loading...</span>
+                </div>
+                <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-mongo-card border border-mongo-border">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-indigo-400"></i>
+                    <span class="text-xs text-slate-300 font-medium">Cognitive LLM:</span>
+                    <span id="llm-status-badge" class="text-[10px] px-2 py-0.5 rounded bg-indigo-950/80 text-indigo-300 font-mono border border-indigo-800/60">Checking...</span>
+                </div>
             </div>
 
             <!-- Action Controls -->
