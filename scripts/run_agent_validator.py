@@ -93,6 +93,14 @@ def main():
             from datetime import datetime
             db = get_db()
             db_status = "AWAITING_APPROVAL" if val["requires_human_approval"] else ("MERGED" if val["approved"] else "REJECTED")
+            
+            # Reconcile drifts in MongoDB if formalized by this PR
+            for rec in val.get("reconciled_drifts", []):
+                incident_id = rec.get("incident_id")
+                if incident_id:
+                    db.drifts.update_one({"incident_id": incident_id}, {"$set": {"reconciled": True}})
+                    print(f"    [Drift Reconciliation] Incident {incident_id} marked as reconciled in MongoDB.")
+
             db.pull_requests.update_one(
                 {"pr_id": pr_mock["pr_id"]},
                 {
