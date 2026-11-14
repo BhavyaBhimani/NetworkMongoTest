@@ -1,0 +1,33 @@
+{
+  "environment": "prod",
+  "version": 1,
+  "description": "Production Protected Environment Network Policies",
+  "rules": [
+    {
+      "rule_id": "BASE-HTTP-PROD",
+      "name": "Core HTTPS Ingress (prod)",
+      "target_env": "prod",
+      "direction": "ingress",
+      "protocol": "TCP",
+      "port_range": "443",
+      "source_cidr": "10.0.0.0/8",
+      "destination_cidr": "10.1.0.0/16",
+      "action": "ALLOW",
+      "risk_level": "LOW",
+      "description": "Standard encrypted web ingress from internal enterprise network"
+    },
+    {
+      "rule_id": "BASE-DNS-PROD",
+      "name": "Core DNS Egress (prod)",
+      "target_env": "prod",
+      "direction": "egress",
+      "protocol": "UDP",
+      "port_range": "53",
+      "source_cidr": "10.1.0.0/16",
+      "destination_cidr": "1.1.1.1/32",
+      "action": "ALLOW",
+      "risk_level": "LOW",
+      "description": "Resolver routing for authoritative internal DNS queries"
+    }
+  ]
+}

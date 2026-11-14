@@ -1,0 +1,52 @@
+name: Post-Merge Deployment, Canary Test & Fallback
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'environments/**'
+
+permissions:
+  contents: write
+
+jobs:
+  deploy-and-attest:
+    name: Deploy Network Policy & Verify
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:7.0
+        ports:
+          - 27017:27017
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pymongo mongomock pydantic pycryptodome python-dotenv
+
+      - name: Run Deployment & Verification (With Auto-Fallback)
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI || 'mongodb://127.0.0.1:27017/nettrace_db' }}
+          PR_AUTHOR: ${{ github.actor }}
+          PR_ID: PR-POST-MERGE
+        run: |
+          # Identify which environment was modified
+          for env in eng qa dev pat prod; do
+            if git diff --name-only HEAD~1 HEAD | grep "environments/$env/" > /dev/null; then
+              echo "Executing deployment pipeline for environment: $env"
+              python scripts/run_deployment_pipeline.py $env
+            fi
+          done

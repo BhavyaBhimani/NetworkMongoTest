@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetTrace AI | MongoDB Context-Aware Policy CI/CD & Attestation Engine</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        mongo: {
+                            green: '#00ED64',
+                            dark: '#001E2B',
+                            slate: '#0b1329',
+                            card: '#111c38',
+                            border: '#1f2e54',
+                            accent: '#00684A'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#080d1a] text-slate-100 min-h-screen font-sans antialiased selection:bg-mongo-green selection:text-black">
+    <!-- Top Navigation Bar -->
+    <header class="border-b border-mongo-border bg-mongo-slate/80 backdrop-blur sticky top-0 z-50 px-6 py-3.5">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-mongo-accent to-mongo-green flex items-center justify-center shadow-lg shadow-mongo-green/20">
+                    <i data-lucide="shield-check" class="w-6 h-6 text-mongo-dark stroke-[2.5]"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold text-lg tracking-tight bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">NetTrace AI</span>
+                        <span class="text-xs px-2 py-0.5 rounded-full font-mono bg-mongo-green/10 text-mongo-green border border-mongo-green/30">Agents in Context</span>
+                    </div>
+                    <p class="text-xs text-slate-400">Context-Aware Network Policy CI/CD & Cryptographic Attestation Engine</p>
+                </div>
+            </div>
+
+            <!-- Central Mongo Badge -->
+            <div class="hidden md:flex items-center gap-3 px-4 py-1.5 rounded-lg bg-mongo-card border border-mongo-border">
+                <span class="w-2.5 h-2.5 rounded-full bg-mongo-green animate-pulse"></span>
+                <span class="text-xs text-slate-300">Powered by <strong class="text-white">MongoDB Atlas</strong> & Agentic Memory</span>
+                <span id="db-engine-badge" class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono">Loading...</span>
+            </div>
+
+            <!-- Action Controls -->
+            <div class="flex items-center gap-3">
+                <button onclick="triggerEmergencyDriftModal()" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/30 hover:bg-amber-500/20 transition">
+                    <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i>
+                    <span>Simulate Midnight Drift</span>
+                </button>
+                <button onclick="reseedData()" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition">
+                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                    <span>Reset Demo</span>
+                </button>
+                <button onclick="openNewPRModal()" class="flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold rounded-lg bg-mongo-green text-mongo-dark hover:bg-emerald-400 shadow-md shadow-mongo-green/20 transition">
+                    <i data-lucide="git-pull-request" class="w-4 h-4 stroke-[2.5]"></i>
+                    <span>New PR</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-6 py-6 space-y-6">
+
+        <!-- Architecture Flow Banner (Matching User's Workflow Diagram) -->
+        <section class="rounded-2xl bg-mongo-card border border-mongo-border p-5 relative overflow-hidden shadow-xl">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="workflow" class="w-4 h-4 text-mongo-green"></i>
+                    <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-300">End-to-End Autonomous Pipeline Architecture</h2>
+                </div>
+                <span class="text-xs text-slate-400">Solves Hackathon Challenge #1: <strong>No Cold Start via Persistent Context</strong></span>
+            </div>
+
+            <!-- Architecture Stages Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-3 relative">
+                <!-- Step 1 -->
+                <div class="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 transition">
+                    <div class="flex items-center gap-2 text-indigo-400 text-xs font-semibold mb-1">
+                        <i data-lucide="git-branch" class="w-3.5 h-3.5"></i>
+                        <span>1. Multi-Branch Git</span>
+                    </div>
+                    <p class="text-xs text-slate-300 font-medium">Users A & B PRs</p>
+                    <p class="text-[11px] text-slate-400 mt-1">Targets: <code class="text-indigo-300">eng</code>, <code class="text-indigo-300">qa</code>, <code class="text-indigo-300">dev</code>, <code class="text-amber-300">pat</code>, <code class="text-rose-400">prod</code></p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 transition">
+                    <div class="flex items-center gap-2 text-cyan-400 text-xs font-semibold mb-1">
+                        <i data-lucide="cpu" class="w-3.5 h-3.5"></i>
+                        <span>2. PR Validator Agent</span>
+                    </div>
+                    <p class="text-xs text-slate-300 font-medium">MongoDB Context Recall</p>
+                    <p class="text-[11px] text-slate-400 mt-1">Queries vector memory, past outages, blast radius & drift</p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 transition">
+                    <div class="flex items-center gap-2 text-emerald-400 text-xs font-semibold mb-1">
+                        <i data-lucide="rocket" class="w-3.5 h-3.5"></i>
+                        <span>3. Deployment Agent</span>
+                    </div>
+                    <p class="text-xs text-slate-300 font-medium">Atomic Revision Push</p>
+                    <p class="text-[11px] text-slate-400 mt-1">Auto-promotes safe rules; gates PAT/PROD for Lead sign-off</p>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 transition">
+                    <div class="flex items-center gap-2 text-teal-400 text-xs font-semibold mb-1">
+                        <i data-lucide="activity" class="w-3.5 h-3.5"></i>
+                        <span>4. Synthetic Test Probe</span>
+                    </div>
+                    <p class="text-xs text-slate-300 font-medium">Attestation vs Rollback</p>
+                    <p class="text-[11px] text-slate-400 mt-1">Pass: signs SLSA attestation. Fail: instant rollback & revert PR</p>
+                </div>
+
+                <!-- Step 5 -->
+                <div class="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 transition">
+                    <div class="flex items-center gap-2 text-amber-400 text-xs font-semibold mb-1">
+                        <i data-lucide="database" class="w-3.5 h-3.5"></i>
+                        <span>5. Continuous Audit Agent</span>
+                    </div>
+                    <p class="text-xs text-slate-300 font-medium">Memory Reconciliation</p>
+                    <p class="text-[11px] text-slate-400 mt-1">Detects emergency manual changes and syncs agent memory</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Navigation Tabs -->
+        <div class="flex items-center gap-2 border-b border-mongo-border pb-2 text-sm">
+            <button onclick="switchTab('prs')" id="tab-prs" class="tab-btn px-4 py-2 font-medium rounded-lg bg-mongo-green/10 text-mongo-green border border-mongo-green/30 flex items-center gap-2">
+                <i data-lucide="play-circle" class="w-4 h-4"></i>
+                <span>Live Pipeline Simulator</span>
+            </button>
+            <button onclick="switchTab('environments')" id="tab-environments" class="tab-btn px-4 py-2 font-medium rounded-lg text-slate-400 hover:text-slate-200 flex items-center gap-2">
+                <i data-lucide="layers" class="w-4 h-4"></i>
+                <span>Environments (eng/qa/dev/pat/prod)</span>
+            </button>
+            <button onclick="switchTab('memory')" id="tab-memory" class="tab-btn px-4 py-2 font-medium rounded-lg text-slate-400 hover:text-slate-200 flex items-center gap-2">
+                <i data-lucide="brain" class="w-4 h-4"></i>
+                <span>MongoDB Agentic Memory & Vector Search</span>
+            </button>
+            <button onclick="switchTab('attestations')" id="tab-attestations" class="tab-btn px-4 py-2 font-medium rounded-lg text-slate-400 hover:text-slate-200 flex items-center gap-2">
+                <i data-lucide="file-check" class="w-4 h-4"></i>
+                <span>Cryptographic Attestation Ledger</span>
+            </button>
+            <button onclick="switchTab('audit')" id="tab-audit" class="tab-btn px-4 py-2 font-medium rounded-lg text-slate-400 hover:text-slate-200 flex items-center gap-2">
+                <i data-lucide="history" class="w-4 h-4"></i>
+                <span>Audit & Out-of-Band Drifts</span>
+            </button>
+        </div>
+
+        <!-- TAB 1: Live Pipeline Simulator -->
+        <div id="view-prs" class="space-y-6">
+            <!-- Preset Scenario Quick Launches -->
+            <div class="p-4 rounded-xl bg-mongo-card/70 border border-mongo-border flex flex-col md:flex-row items-center justify-between gap-4">
+                <div>
+                    <h3 class="text-sm font-semibold text-white flex items-center gap-2">
+                        <i data-lucide="sparkles" class="w-4 h-4 text-mongo-green"></i>
+                        <span>Hackathon Demonstration Scenarios</span>
+                    </h3>
+                    <p class="text-xs text-slate-400">Trigger end-to-end multi-agent execution flows matching the user architecture:</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button onclick="runScenario('safe_dev')" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 transition">
+                        Scenario 1: Safe Dev PR (Auto-Attest)
+                    </button>
+                    <button onclick="runScenario('prod_gate')" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/30 hover:bg-amber-500/20 transition">
+                        Scenario 2: Prod Sensitive PR (Lead Gate)
+                    </button>
+                    <button onclick="runScenario('fail_rollback')" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/30 hover:bg-rose-500/20 transition">
+                        Scenario 3: Flawed Policy (Auto-Rollback & Revert PR)
+                    </button>
+                    <button onclick="runScenario('unsafe_ssh')" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/30 hover:bg-purple-500/20 transition">
+                        Scenario 4: Dangerous SSH (Blocked by Memory)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Active / Recent PRs List -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- PR List Column -->
+                <div class="lg:col-span-1 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Pull Requests in Pipeline</h3>
+                        <span id="pr-count-badge" class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-mono">0</span>
+                    </div>
+                    <div id="pr-list-container" class="space-y-2 max-h-[600px] overflow-y-auto pr-1">
+                        <!-- Populated dynamically via app.js -->
+                    </div>
+                </div>
+
+                <!-- PR Pipeline Details & Terminal -->
+                <div class="lg:col-span-2 space-y-4">
+                    <div id="pr-details-card" class="rounded-xl bg-mongo-card border border-mongo-border p-5 min-h-[450px]">
+                        <div class="text-center py-16 text-slate-500">
+                            <i data-lucide="git-pull-request" class="w-12 h-12 mx-auto mb-3 opacity-40"></i>
+                            <p class="text-sm font-medium">Select a Pull Request or run a Scenario above to inspect the live multi-agent execution pipeline.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: Environments View -->
+        <div id="view-environments" class="hidden space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4" id="env-cards-container">
+                <!-- Populated dynamically via app.js -->
+            </div>
+            <!-- Telemetry Graph -->
+            <div class="p-5 rounded-xl bg-mongo-card border border-mongo-border space-y-3">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-semibold text-white flex items-center gap-2">
+                        <i data-lucide="activity" class="w-4 h-4 text-mongo-green"></i>
+                        <span>MongoDB Time-Series Telemetry (Network Probe Latencies)</span>
+                    </h3>
+                    <span class="text-xs text-slate-400">Automatic aggregation pipelines over synthetic probe streams</span>
+                </div>
+                <div class="h-64">
+                    <canvas id="telemetryChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: MongoDB Agentic Memory Browser -->
+        <div id="view-memory" class="hidden space-y-6">
+            <div class="p-5 rounded-xl bg-mongo-card border border-mongo-border space-y-4">
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <i data-lucide="brain" class="w-5 h-5 text-mongo-green"></i>
+                            <span>MongoDB Context Memory & Vector Search Explorer</span>
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-1">Demonstrates how agents eliminate the Cold-Start bottleneck by retaining historical incident episodes, blast radius metrics, and past manual overrides.</p>
+                    </div>
+                    <!-- Semantic Search Input -->
+                    <div class="flex items-center gap-2 w-full md:w-96">
+                        <div class="relative w-full">
+                            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
+                            <input id="memory-search-input" type="text" placeholder="Search semantic memory (e.g. port 22 outage, pat buffer)..." 
+                                class="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-mongo-green">
+                        </div>
+                        <button onclick="executeMemorySearch()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-mongo-green text-mongo-dark hover:bg-emerald-400 transition">
+                            Search
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Memory Results Container -->
+                <div id="memory-episodes-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                    <!-- Populated dynamically via app.js -->
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: Cryptographic Attestation Ledger -->
+        <div id="view-attestations" class="hidden space-y-6">
+            <div class="p-5 rounded-xl bg-mongo-card border border-mongo-border space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <i data-lucide="file-check" class="w-5 h-5 text-mongo-green"></i>
+                            <span>SLSA / in-toto Cryptographic Attestation Ledger</span>
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-1">Immutable cryptographic records stored in MongoDB, linking each deployed policy to its author, synthetic test run, SHA-256 digest, and parent hash chain.</p>
+                    </div>
+                    <span class="text-xs px-2.5 py-1 rounded bg-slate-800 text-slate-300 font-mono border border-slate-700">HMAC-SHA256 Signed</span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="border-b border-mongo-border text-slate-400 font-medium">
+                            <tr>
+                                <th class="py-2.5 px-3">Attestation ID</th>
+                                <th class="py-2.5 px-3">Target Env</th>
+                                <th class="py-2.5 px-3">PR / Author</th>
+                                <th class="py-2.5 px-3">SHA-256 Digest</th>
+                                <th class="py-2.5 px-3">Test Status</th>
+                                <th class="py-2.5 px-3">Chain Link</th>
+                                <th class="py-2.5 px-3 text-right">Verification</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attestations-table-body" class="divide-y divide-mongo-border/50 text-slate-300">
+                            <!-- Populated dynamically via app.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: Audit & Out-of-Band Drifts -->
+        <div id="view-audit" class="hidden space-y-6">
+            <div class="p-5 rounded-xl bg-mongo-card border border-mongo-border space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <i data-lucide="shield-alert" class="w-5 h-5 text-amber-400"></i>
+                            <span>Audit Agent & Emergency Out-of-Band Change Reconciliation</span>
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-1">Continuously compares running network state against signed MongoDB attestations to detect un-attested midnight hotfixes or cloud outages.</p>
+                    </div>
+                    <button onclick="triggerEmergencyDriftModal()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 transition">
+                        + Inject Manual Out-of-Band Change
+                    </button>
+                </div>
+
+                <!-- Drift Incident Cards -->
+                <div id="drifts-container" class="space-y-3">
+                    <!-- Populated dynamically via app.js -->
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal: New Pull Request -->
+    <div id="new-pr-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-mongo-card border border-mongo-border rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-mongo-border pb-3">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                    <i data-lucide="git-pull-request" class="w-4 h-4 text-mongo-green"></i>
+                    <span>Create Network Policy Pull Request</span>
+                </h3>
+                <button onclick="closeNewPRModal()" class="text-slate-400 hover:text-white">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <form id="new-pr-form" onsubmit="submitCustomPR(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-slate-400 mb-1 font-medium">PR Title</label>
+                    <input id="pr-title" type="text" required value="Enable Analytics Ingress on Telemetry Port" class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-mongo-green">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-medium">Author</label>
+                        <select id="pr-author" class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-mongo-green">
+                            <option value="User A (Dev)">User A (Dev)</option>
+                            <option value="User B (Lead)">User B (Lead)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-medium">Target Branch / Environment</label>
+                        <select id="pr-branch" class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-mongo-green">
+                            <option value="dev">dev</option>
+                            <option value="eng">eng</option>
+                            <option value="qa">qa</option>
+                            <option value="pat">pat (Protected)</option>
+                            <option value="prod">prod (Protected)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-medium">Port</label>
+                        <input id="pr-port" type="text" required value="443" class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-mongo-green">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-medium">Protocol</label>
+                        <select id="pr-protocol" class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-mongo-green">
+                            <option value="TCP">TCP</option>
+                            <option value="UDP">UDP</option>
+                            <option value="ALL">ALL</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-medium">Action</label>
+                        <select id="pr-action" class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-mongo-green">
+                            <option value="ALLOW">ALLOW</option>
+                            <option value="DENY">DENY</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-slate-400 mb-1 font-medium">Source CIDR</label>
+                    <input id="pr-source-cidr" type="text" required value="10.0.0.0/16" class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-mongo-green">
+                </div>
+
+                <div class="pt-3 flex items-center justify-end gap-2 border-t border-mongo-border">
+                    <button type="button" onclick="closeNewPRModal()" class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">Cancel</button>
+                    <button type="submit" class="px-4 py-1.5 rounded-lg bg-mongo-green text-mongo-dark font-semibold hover:bg-emerald-400">Launch PR Pipeline</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Attestation Inspector -->
+    <div id="attestation-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-mongo-card border border-mongo-border rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-mongo-border pb-3">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                    <i data-lucide="file-check" class="w-4 h-4 text-mongo-green"></i>
+                    <span>Cryptographic Attestation Verification</span>
+                </h3>
+                <button onclick="closeAttestationModal()" class="text-slate-400 hover:text-white">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <div id="attestation-modal-content" class="space-y-3 text-xs font-mono">
+                <!-- Populated dynamically via app.js -->
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

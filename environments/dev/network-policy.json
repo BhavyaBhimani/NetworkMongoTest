@@ -1,0 +1,33 @@
+{
+  "environment": "dev",
+  "version": 1,
+  "description": "Development Environment Network Policies",
+  "rules": [
+    {
+      "rule_id": "BASE-HTTP-DEV",
+      "name": "Core HTTPS Ingress (dev)",
+      "target_env": "dev",
+      "direction": "ingress",
+      "protocol": "TCP",
+      "port_range": "443",
+      "source_cidr": "10.0.0.0/8",
+      "destination_cidr": "10.1.0.0/16",
+      "action": "ALLOW",
+      "risk_level": "LOW",
+      "description": "Standard encrypted web ingress from internal enterprise network"
+    },
+    {
+      "rule_id": "BASE-DNS-DEV",
+      "name": "Core DNS Egress (dev)",
+      "target_env": "dev",
+      "direction": "egress",
+      "protocol": "UDP",
+      "port_range": "53",
+      "source_cidr": "10.1.0.0/16",
+      "destination_cidr": "1.1.1.1/32",
+      "action": "ALLOW",
+      "risk_level": "LOW",
+      "description": "Resolver routing for authoritative internal DNS queries"
+    }
+  ]
+}
